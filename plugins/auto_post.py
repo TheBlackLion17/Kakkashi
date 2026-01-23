@@ -147,7 +147,7 @@ async def auto_movie_post(client, message):
         print(f"✅ Sent filter link: {title}")        text=caption,
         reply_markup=buttons,
         disable_web_page_preview=True
-    )
+    
 
     print(f"✅ Sent combined filter: {series_name} -> {episode_text}")
 
