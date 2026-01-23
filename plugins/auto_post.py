@@ -3,8 +3,8 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILE_BOT_USERNAME
-from Script import script  # Capital S as requested
-
+from Script import script
+from database.posted_db import is_posted, mark_posted  # Deduplication DB
 
 def extract_title(filename: str):
     """Clean file name for caption and filter payload"""
@@ -36,14 +36,12 @@ def create_payload(title, episode_code=None):
     Encode payload for Telegram deep-link.
     Multiple keywords supported.
     """
-    # Base keyword
     keywords = [title]
 
-    # Add episode code as separate keyword if exists
     if episode_code:
         keywords.append(episode_code)
 
-    # Encode for start payload (replace spaces with _)
+    # Replace spaces with underscores for /start payload
     payload = "_".join(keywords).replace(" ", "_")
     return payload
 
@@ -58,18 +56,25 @@ async def auto_movie_post(client, message):
     if not media or not media.file_name:
         return
 
+    # Extract cleaned title and series info
     title, is_series, episode_code = extract_title(media.file_name)
 
-    # Generate payload for FILE BOT
+    # 🔹 Skip duplicates
+    if await is_posted(title):
+        print(f"⚠ Skipped duplicate: {title}")
+        return
+
+    # Generate payload for file bot
     payload = create_payload(title, episode_code)
 
-    # Auto-caption
+    # Caption
     caption = script.AUTO_POST_TXT.format(
         title=title,
         type="Series" if is_series else "Movie",
         quality="HDRip"
     )
 
+    # Inline keyboard
     buttons = InlineKeyboardMarkup(
         [[
             InlineKeyboardButton(
@@ -79,11 +84,15 @@ async def auto_movie_post(client, message):
         ]]
     )
 
+    # Send to update channel
     await client.send_message(
         chat_id=MOVIE_UPDATE_CHANNEL,
         text=caption,
         reply_markup=buttons,
         disable_web_page_preview=True
     )
+
+    # Mark as posted in DB
+    await mark_posted(title)
 
     print(f"✅ Sent filter link: {title}")
