@@ -2,8 +2,8 @@ import re
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILE_BOT_USERNAME
-from Script import script   # ✅ IMPORT CLASS
+from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILTER_BOT_USERNAME
+from Script import script
 
 
 def extract_title(filename: str) -> str:
@@ -16,7 +16,7 @@ def extract_title(filename: str) -> str:
     )
     filename = re.sub(r"[._\-]", " ", filename)
     filename = re.sub(r"\s+", " ", filename)
-    return filename.strip().title()
+    return filename.strip()
 
 
 @Client.on_message(
@@ -31,9 +31,12 @@ async def auto_movie_post(client, message):
 
     title = extract_title(media.file_name)
 
+    # 🔑 ENCODE TITLE FOR START PAYLOAD
+    payload = title.replace(" ", "_")
+
     caption = script.AUTO_POST_TXT.format(
         title=title,
-        type="Movie / Series",
+        type="Series / Movie",
         quality="HDRip"
     )
 
@@ -41,7 +44,7 @@ async def auto_movie_post(client, message):
         [[
             InlineKeyboardButton(
                 "⬇️ DOWNLOAD",
-                url=f"https://t.me/{FILE_BOT_USERNAME}?start={media.file_unique_id}"
+                url=f"https://t.me/{FILTER_BOT_USERNAME}?start={payload}"
             )
         ]]
     )
@@ -53,4 +56,4 @@ async def auto_movie_post(client, message):
         disable_web_page_preview=True
     )
 
-    print(f"✅ Auto posted: {title}")
+    print(f"✅ Sent filter link: {title}")
