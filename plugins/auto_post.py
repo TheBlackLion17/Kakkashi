@@ -1,47 +1,41 @@
 import re
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from datetime import date
 
 from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILE_BOT_USERNAME
 from Script import script
-from database.posted_db import is_posted, mark_posted  # Deduplication DB
+from database.posted_db import is_posted, mark_posted
 
 def extract_title(filename: str):
     """Clean file name for caption and filter payload"""
-    # Remove extension
     filename = re.sub(r"\.[^.]+$", "", filename)
-
-    # Remove unwanted tags
     filename = re.sub(
         r"\b(HDR10Plus|DV|DVDRip|AAC|6CH|WEBRip|BluRay|x264|x265|\[.*?\])\b",
         "",
         filename,
         flags=re.I
     )
-
-    # Replace dots/underscores/dashes with spaces
     filename = re.sub(r"[._\-]", " ", filename)
     filename = re.sub(r"\s+", " ", filename)
     cleaned = filename.strip()
 
-    # Detect if it's a series episode
+    # Detect series episode
     series_match = re.search(r"(S\d{2}E\d{2})", cleaned, flags=re.I)
     is_series = bool(series_match)
 
-    return cleaned.title(), is_series, series_match.group(1) if series_match else None
+    # Series name without episode code
+    series_name = cleaned
+    if series_match:
+        series_name = cleaned.replace(series_match.group(1), "").strip()
+
+    return cleaned.title(), is_series, series_match.group(1) if series_match else None, series_name.title()
 
 
 def create_payload(title, episode_code=None):
-    """
-    Encode payload for Telegram deep-link.
-    Multiple keywords supported.
-    """
     keywords = [title]
-
     if episode_code:
         keywords.append(episode_code)
-
-    # Replace spaces with underscores for /start payload
     payload = "_".join(keywords).replace(" ", "_")
     return payload
 
@@ -51,20 +45,25 @@ def create_payload(title, episode_code=None):
     (filters.document | filters.video)
 )
 async def auto_movie_post(client, message):
-
     media = message.document or message.video
     if not media or not media.file_name:
         return
 
-    # Extract cleaned title and series info
-    title, is_series, episode_code = extract_title(media.file_name)
+    title, is_series, episode_code, series_name = extract_title(media.file_name)
 
-    # 🔹 Skip duplicates
-    if await is_posted(title):
-        print(f"⚠ Skipped duplicate: {title}")
-        return
+    # 🔹 Check for duplicates
+    if is_series:
+        # Only one filter per series per day
+        if await is_posted(series_name, series_only=True):
+            print(f"⚠ Skipped series duplicate today: {series_name}")
+            return
+    else:
+        # Movie duplicate check
+        if await is_posted(title):
+            print(f"⚠ Skipped duplicate movie: {title}")
+            return
 
-    # Generate payload for file bot
+    # Create payload for file bot
     payload = create_payload(title, episode_code)
 
     # Caption
@@ -74,7 +73,7 @@ async def auto_movie_post(client, message):
         quality="HDRip"
     )
 
-    # Inline keyboard
+    # Inline button
     buttons = InlineKeyboardMarkup(
         [[
             InlineKeyboardButton(
@@ -84,7 +83,7 @@ async def auto_movie_post(client, message):
         ]]
     )
 
-    # Send to update channel
+    # Send message
     await client.send_message(
         chat_id=MOVIE_UPDATE_CHANNEL,
         text=caption,
@@ -92,7 +91,10 @@ async def auto_movie_post(client, message):
         disable_web_page_preview=True
     )
 
-    # Mark as posted in DB
-    await mark_posted(title)
+    # Mark posted
+    if is_series:
+        await mark_posted(title, series_title=series_name)
+    else:
+        await mark_posted(title)
 
     print(f"✅ Sent filter link: {title}")
