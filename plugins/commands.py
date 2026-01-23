@@ -4,7 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from info import PICS
-from scripts import START_TEXT
+from Scripts import *
 
 
 @Client.on_message(filters.private & filters.command("start"))
@@ -29,3 +29,4 @@ async def start_cmd(client, message):
         ),
         reply_markup=buttons
     )
+
