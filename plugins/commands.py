@@ -1,5 +1,6 @@
-# commands.py
+# plugins/commands.py
 
+import random
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -9,7 +10,9 @@ from Script import *
 
 @Client.on_message(filters.private & filters.command("start"))
 async def start_cmd(client, message):
-    
+
+    pic = random.choice(PICS) if PICS else None
+
     buttons = InlineKeyboardMarkup(
         [
             [
@@ -22,12 +25,18 @@ async def start_cmd(client, message):
         ]
     )
 
-    await message.reply_photo(
-        photo=PICS,
-        caption=START_TEXT.format(
-            mention=message.from_user.mention
-        ),
-        reply_markup=buttons
-    )
-
-
+    if pic:
+        await message.reply_photo(
+            photo=pic,
+            caption=START_TEXT.format(
+                mention=message.from_user.mention
+            ),
+            reply_markup=buttons
+        )
+    else:
+        await message.reply_text(
+            text=START_TEXT.format(
+                mention=message.from_user.mention
+            ),
+            reply_markup=buttons
+        )
