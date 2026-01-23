@@ -5,6 +5,16 @@ class script(object):
     
     HELP_TXT = """» ᴡʜᴇʀᴇ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴏᴘᴇɴ ᴛʜᴇ sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ?."""
 
+    # 🔥 AUTO POST CAPTION (USED FOR MOVIE UPDATE CHANNEL)
+    AUTO_POST_TXT = """
+✅ <b>{title}</b>
+
+🎬 Type : {type}
+📦 Quality : {quality}
+
+👇 <b>DOWNLOAD LINK</b> 👇
+"""
+
     ABOUT_TXT = """<blockquote><b>❍ ᴍʏ ɴᴀᴍᴇ : <a href="https://t.me/AgsModsOG">AgsModsOG ʙᴏᴛ</a>
 ❍ ᴄʀᴇᴀᴛᴏʀ : <a href="https://t.me/AgsModsOG">AgsModsOG</a>
 ❍ ʟɪʙʀᴀʀʏ : <a href="https://pyrogram.org/">ᴘʏʀᴏɢʀᴀᴍ</a>
@@ -307,4 +317,5 @@ BOT WORKING PROPERLY"""
     APPROVE_TXT = """
 ᴊᴜsᴛ ᴀᴅᴅ ᴍᴇ ɪɴ ᴜʀ ᴄʜᴀɴɴᴇʟ ᴏʀ ɢʀᴏᴜᴘ ᴀɴᴅ sᴇᴇ ᴍᴀɢɪᴄ
 """
+
 
