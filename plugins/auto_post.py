@@ -12,7 +12,9 @@ BATCH_DELAY = 3  # seconds before sending combined series filter
 
 
 def extract_title_and_quality(filename: str):
-    """Extract clean title, series info, episode code, and quality"""
+    """
+    Extract clean title, detect series info, episode code, and quality
+    """
     filename = re.sub(r"\.[^.]+$", "", filename)  # Remove extension
 
     # Detect quality (720p, 1080p, 2160P)
@@ -33,11 +35,15 @@ def extract_title_and_quality(filename: str):
     # Detect series episode
     series_match = re.search(r"(S\d{2}E\d{2})", cleaned, flags=re.I)
     is_series = bool(series_match)
-    series_name = cleaned
-    if series_match:
-        series_name = cleaned.replace(series_match.group(1), "").strip()
 
-    return cleaned.title(), is_series, series_match.group(1) if series_match else None, series_name.title(), quality_text
+    # Series name without episode code
+    series_name = cleaned
+    episode_code = None
+    if series_match:
+        episode_code = series_match.group(1)
+        series_name = cleaned.replace(episode_code, "").strip()
+
+    return cleaned.title(), is_series, episode_code, series_name.title(), quality_text
 
 
 def create_payload(title, episode_codes=None):
@@ -75,6 +81,70 @@ async def send_series_filter(client, series_name, episodes, quality):
     await client.send_message(
         chat_id=MOVIE_UPDATE_CHANNEL,
         text=caption,
+        reply_markup=buttons,
+        disable_web_page_preview=True
+    )
+
+    print(f"✅ Sent combined filter: {series_name} -> {episode_text}")
+
+    # Mark series as sent in DB
+    await mark_series_sent(series_name, datetime.utcnow().date())
+
+
+@Client.on_message(
+    filters.chat(CHANNELS) &
+    (filters.document | filters.video)
+)
+async def auto_movie_post(client, message):
+    media = message.document or message.video
+    if not media or not media.file_name:
+        return
+
+    # Extract title, series info, episode code, and quality
+    title, is_series, episode_code, series_name, quality = extract_title_and_quality(media.file_name)
+    today = datetime.utcnow().date()
+
+    if is_series:
+        # Fetch series info from DB
+        series_data = await get_series(series_name, today)
+
+        episodes = {episode_code}
+        if series_data:
+            episodes.update(series_data.get("episodes", []))
+            await add_or_update_series(series_name, list(episodes), quality, today)
+        else:
+            await add_or_update_series(series_name, list(episodes), quality, today)
+
+        # Schedule sending after BATCH_DELAY
+        async def delayed_send():
+            await asyncio.sleep(BATCH_DELAY)
+            latest = await get_series(series_name, today)
+            if latest and not latest.get("sent", False):
+                await send_series_filter(client, series_name, latest["episodes"], latest["quality"])
+
+        asyncio.create_task(delayed_send())
+
+    else:
+        # Single movie
+        payload = create_payload(title)
+        caption = (
+            f"✅ {title}\n\n"
+            f"🎙 Japanese\n\n"
+            f"⚡ Quality: {quality}"
+        )
+        buttons = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(
+                "⬇️ DOWNLOAD",
+                url=f"https://t.me/{FILE_BOT_USERNAME}?start={payload}"
+            )]]
+        )
+        await client.send_message(
+            chat_id=MOVIE_UPDATE_CHANNEL,
+            text=caption,
+            reply_markup=buttons,
+            disable_web_page_preview=True
+        )
+        print(f"✅ Sent filter link: {title}")        text=caption,
         reply_markup=buttons,
         disable_web_page_preview=True
     )
