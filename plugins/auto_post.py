@@ -2,7 +2,7 @@ import re
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILTER_BOT_USERNAME
+from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILE_BOT_USERNAME
 from Script import script
 
 
@@ -44,7 +44,7 @@ async def auto_movie_post(client, message):
         [[
             InlineKeyboardButton(
                 "⬇️ DOWNLOAD",
-                url=f"https://t.me/{FILTER_BOT_USERNAME}?start={payload}"
+                url=f"https://t.me/{FILE_BOT_USERNAME}?start={payload}"
             )
         ]]
     )
