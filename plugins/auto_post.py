@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from info import CHANNELS, MOVIE_UPDATE_CHANNEL, FILE_BOT_USERNAME
-from Script import script
+from Script import script  # Capital S as requested
 
 
 def extract_title(filename: str):
@@ -67,28 +67,6 @@ async def auto_movie_post(client, message):
     caption = script.AUTO_POST_TXT.format(
         title=title,
         type="Series" if is_series else "Movie",
-        quality="HDRip"
-    )
-
-    buttons = InlineKeyboardMarkup(
-        [[
-            InlineKeyboardButton(
-                "⬇️ DOWNLOAD",
-                url=f"https://t.me/{FILE_BOT_USERNAME}?start={payload}"
-            )
-        ]]
-    )
-
-    await client.send_message(
-        chat_id=MOVIE_UPDATE_CHANNEL,
-        text=caption,
-        reply_markup=buttons,
-        disable_web_page_preview=True
-    )
-
-    print(f"✅ Sent filter link: {title}")    caption = script.AUTO_POST_TXT.format(
-        title=title,
-        type="Series / Movie",
         quality="HDRip"
     )
 
