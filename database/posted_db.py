@@ -1,29 +1,31 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from info import DATABASE_URI
-from datetime import date
+from datetime import datetime
 
+# MongoDB client
 mongo = AsyncIOMotorClient(DATABASE_URI)
-db = mongo["auto_post"]
-posted_collection = db["posted_titles"]
+db = mongo["autofilter_bot"]
+series_collection = db["series_filters"]
 
-async def is_posted(title: str, series_only=False) -> bool:
-    """Check if title or series already posted today"""
-    today_str = str(date.today())
-    query = {"title": title, "date": today_str}
-    if series_only:
-        # Series filter ignores episode number
-        query = {"series_title": title, "date": today_str}
-    result = await posted_collection.find_one(query)
-    return bool(result)
 
-async def mark_posted(title: str, series_title=None):
-    """Mark title or series as posted today"""
-    today_str = str(date.today())
-    data = {"date": today_str, "title": title}
-    if series_title:
-        data["series_title"] = series_title
-    await posted_collection.update_one(
-        {"title": title, "date": today_str},
-        {"$set": data},
+async def get_series(series_name: str, date: datetime.date):
+    """Get series info for a specific date"""
+    return await series_collection.find_one({"series_name": series_name, "date": date})
+
+
+async def add_or_update_series(series_name: str, episodes: list, quality: str, date: datetime.date):
+    """Add new series or update episodes for today"""
+    await series_collection.update_one(
+        {"series_name": series_name, "date": date},
+        {"$set": {"episodes": episodes, "quality": quality, "sent": False}},
+        upsert=True
+    )
+
+
+async def mark_series_sent(series_name: str, date: datetime.date):
+    """Mark series as sent today"""
+    await series_collection.update_one(
+        {"series_name": series_name, "date": date},
+        {"$set": {"sent": True}},
         upsert=True
     )
