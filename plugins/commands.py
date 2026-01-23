@@ -1,42 +1,40 @@
-# plugins/commands.py
-
 import random
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from info import PICS
-from Script import *
+from Script import script   # ✅ IMPORT CLASS
+
+
+print("✅ commands.py loaded")
 
 
 @Client.on_message(filters.private & filters.command("start"))
 async def start_cmd(client, message):
 
+    user = message.from_user
     pic = random.choice(PICS) if PICS else None
+
+    text = script.START_TXT.format(
+        user.first_name,
+        user.mention
+    )
 
     buttons = InlineKeyboardMarkup(
         [
-            [
-                InlineKeyboardButton("🎥 Movies", callback_data="movies"),
-                InlineKeyboardButton("ℹ️ Help", callback_data="help")
-            ],
-            [
-                InlineKeyboardButton("📢 Updates", url="https://t.me/YourChannel")
-            ]
+            [InlineKeyboardButton("ℹ️ Help", callback_data="help")],
+            [InlineKeyboardButton("➕ Add Me", url=f"https://t.me/{client.me.username}?startgroup=true")]
         ]
     )
 
     if pic:
         await message.reply_photo(
             photo=pic,
-            caption=START_TEXT.format(
-                mention=message.from_user.mention
-            ),
+            caption=text,
             reply_markup=buttons
         )
     else:
         await message.reply_text(
-            text=START_TEXT.format(
-                mention=message.from_user.mention
-            ),
+            text=text,
             reply_markup=buttons
         )
