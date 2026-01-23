@@ -27,7 +27,7 @@ USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', True))
 PICS = (environ.get('PICS', 'https://files.catbox.moe/qnnmpa.jpg https://files.catbox.moe/2ab4tp.jpg')).split()  # Sample pic
 LOG_CHANNEL = environ.get('LOG_CHANNEL', LOG_CHANNEL) # Channel to log bot activities
 OWNERID = int(os.environ.get('OWNERID', '7705748477'))  
-
+FILE_BOT_USERNAME = "agsfilterV3_bot"
 # MongoDB Configuration
 
 DATABASE_URI = environ.get('DATABASE_URI', "mongodb+srv://test:test@cluster0.zsqath9.mongodb.net/?appName=Cluster0")
@@ -150,6 +150,7 @@ LOG_STR += ("SINGLE_BUTTON is found, filename and file size will be shown in a s
 LOG_STR += (f"CUSTOM_FILE_CAPTION enabled with value {CUSTOM_FILE_CAPTION}, your files will be sent along with this customized caption.\n" if CUSTOM_FILE_CAPTION else "No CUSTOM_FILE_CAPTION Found, Default captions of file will be used.\n")
 LOG_STR += ("Long IMDB storyline enabled." if LONG_IMDB_DESCRIPTION else "LONG_IMDB_DESCRIPTION is disabled, Plot will be shorter.\n")
 LOG_STR += ("Spell Check Mode is enabled, bot will be suggesting related movies if movie name is misspelled.\n" if SPELL_CHECK_REPLY else "Spell Check Mode is disabled.\n")
+
 
 
 
