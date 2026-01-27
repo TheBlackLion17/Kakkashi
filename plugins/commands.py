@@ -41,23 +41,34 @@ async def start_cmd(client, message):
 
 
 
-@Client.on_callback_query(filters.regex("^help$"))
-async def help_callback(client, query):
-    await query.answer()
+@Client.on_callback_query()
+async def cb_handler(client, query: CallbackQuery):
+    data = query.data
+    user_id = query.from_user.id
 
-    pic = random.choice(PICS)
+    print(f"Callback data received: {data}")  # Debugging line
 
-    buttons = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("⬅ Back", callback_data="start")]
-        ]
-    )
+    if data == "home":
+        await query.message.edit_text(
+            text=Txt.START_TXT.format(query.from_user.mention),
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')],
+                [InlineKeyboardButton('• ᴜᴘᴅᴀᴛᴇs', url='https://t.me/Codeflix_Bots'), InlineKeyboardButton('sᴜᴘᴘᴏʀᴛ •', url='https://t.me/CodeflixSupport')],
+                [InlineKeyboardButton('• ᴀʙᴏᴜᴛ', callback_data='about'), InlineKeyboardButton('sᴏᴜʀᴄᴇ •', callback_data='source')]
+            ])
+        )
 
-    await query.message.edit_media(
-        media=InputMediaPhoto(
-            media=pic,
-            caption=script.HELP_TXT,
-            parse_mode="html"
-        ),
-        reply_markup=buttons
-    )
+    elif data == "help":
+        await query.message.edit_text(
+            text=Txt.HELP_TXT.format(client.mention),
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("• ᴀᴜᴛᴏ ʀᴇɴᴀᴍᴇ ғᴏʀᴍᴀᴛ •", callback_data='file_names')],
+                [InlineKeyboardButton('• ᴛʜᴜᴍʙɴᴀɪʟ', callback_data='thumbnail'), InlineKeyboardButton('ᴄᴀᴘᴛɪᴏɴ •', callback_data='caption')],
+                [InlineKeyboardButton('• ᴍᴇᴛᴀᴅᴀᴛᴀ', callback_data='meta'), InlineKeyboardButton('ᴅᴏɴᴀᴛᴇ •', callback_data='donate')],
+                [InlineKeyboardButton('• ʜᴏᴍᴇ', callback_data='home')]
+            ])
+        )
+     
+
