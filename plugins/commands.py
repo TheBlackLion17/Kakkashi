@@ -20,12 +20,19 @@ async def start_cmd(client, message):
         user.mention
     )
 
-    buttons = InlineKeyboardMarkup(
+    buttons = InlineKeyboardMarkup([
         [
-            [InlineKeyboardButton("ℹ️ Help", callback_data='help')],
-            [InlineKeyboardButton("➕ Add Me", url=f"https://t.me/{client.me.username}?startgroup=true")]
+            InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')
+        ],
+        [
+            InlineKeyboardButton('• ᴜᴘᴅᴀᴛᴇs', url='https://t.me/Codeflix_Bots'),
+            InlineKeyboardButton('sᴜᴘᴘᴏʀᴛ •', url='https://t.me/CodeflixSupport')
+        ],
+        [
+            InlineKeyboardButton('• ᴀʙᴏᴜᴛ', callback_data='about'),
+            InlineKeyboardButton('sᴏᴜʀᴄᴇ •', callback_data='source')
         ]
-    )
+    ])
 
     if pic:
         await message.reply_photo(
@@ -71,6 +78,7 @@ async def cb_handler(client, query: CallbackQuery):
             ])
         )
      
+
 
 
 
