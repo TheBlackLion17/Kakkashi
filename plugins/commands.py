@@ -38,3 +38,14 @@ async def start_cmd(client, message):
             text=text,
             reply_markup=buttons
         )
+
+@Client.on_callback_query(filters.regex("^help$"))
+async def help_cb(client, callback_query):
+    await callback_query.answer()
+    await callback_query.message.edit_text(
+        script.HELP_TXT,
+        parse_mode="html",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("⬅ Back", callback_data="start")]]
+        )
+    )
