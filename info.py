@@ -18,7 +18,7 @@ def is_enabled(value, default):
 SESSION = environ.get('SESSION', 'Media_search')
 API_ID = int(environ.get('API_ID', '20919286'))
 API_HASH = environ.get('API_HASH', '57b85f72104db3f08f9795b0410eb556')
-BOT_TOKEN = environ.get('BOT_TOKEN', '8078971819:AAHDmtVyddJDLAfQFEbMYG8lrG_-xN0yGX0')
+BOT_TOKEN = environ.get('BOT_TOKEN', '8397223439:AAG8WgvvMJGH5BUrOCErP5RYweOp6wiD5JY')
 LOG_CHANNEL= "@logags"
 
 # Bot Settings Configuration
@@ -150,6 +150,7 @@ LOG_STR += ("SINGLE_BUTTON is found, filename and file size will be shown in a s
 LOG_STR += (f"CUSTOM_FILE_CAPTION enabled with value {CUSTOM_FILE_CAPTION}, your files will be sent along with this customized caption.\n" if CUSTOM_FILE_CAPTION else "No CUSTOM_FILE_CAPTION Found, Default captions of file will be used.\n")
 LOG_STR += ("Long IMDB storyline enabled." if LONG_IMDB_DESCRIPTION else "LONG_IMDB_DESCRIPTION is disabled, Plot will be shorter.\n")
 LOG_STR += ("Spell Check Mode is enabled, bot will be suggesting related movies if movie name is misspelled.\n" if SPELL_CHECK_REPLY else "Spell Check Mode is disabled.\n")
+
 
 
 
