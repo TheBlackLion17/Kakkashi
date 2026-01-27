@@ -9,17 +9,27 @@ from Script import script   # ✅ IMPORT CLASS
 print("✅ commands.py loaded")
 
 
+# Start Command Handler
 @Client.on_message(filters.private & filters.command("start"))
-async def start_cmd(client, message):
-
+async def start(client, message: Message):
     user = message.from_user
-    pic = random.choice(PICS) if PICS else None
+    await codeflixbots.add_user(client, message)
 
-    text = script.START_TXT.format(
-        user.first_name,
-        user.mention
-    )
+    # Initial interactive text and sticker sequence
+    m = await message.reply_text("ʜᴇʜᴇ..ɪ'ᴍ ᴀɴʏᴀ!\nᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ. . .")
+    await asyncio.sleep(0.4)
+    await m.edit_text("🎊")
+    await asyncio.sleep(0.5)
+    await m.edit_text("⚡")
+    await asyncio.sleep(0.5)
+    await m.edit_text("ᴡᴀᴋᴜ ᴡᴀᴋᴜ!...")
+    await asyncio.sleep(0.4)
+    await m.delete()
 
+    # Send sticker after the text sequence
+    await message.reply_sticker("CAACAgUAAxkBAAECroBmQKMAAQ-Gw4nibWoj_pJou2vP1a4AAlQIAAIzDxlVkNBkTEb1Lc4eBA")
+
+    # Define buttons for the start message
     buttons = InlineKeyboardMarkup([
         [
             InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')
@@ -34,18 +44,19 @@ async def start_cmd(client, message):
         ]
     ])
 
-    if pic:
+    # Send start message with or without picture
+    if Config.START_PIC:
         await message.reply_photo(
-            photo=pic,
-            caption=text,
+            Config.START_PIC,
+            caption=Txt.START_TXT.format(user.mention),
             reply_markup=buttons
         )
     else:
         await message.reply_text(
-            text=text,
-            reply_markup=buttons
+            text=Txt.START_TXT.format(user.mention),
+            reply_markup=buttons,
+            disable_web_page_preview=True
         )
-
 
 
 @Client.on_callback_query()
@@ -78,6 +89,7 @@ async def cb_handler(client, query: CallbackQuery):
             ])
         )
      
+
 
 
 
