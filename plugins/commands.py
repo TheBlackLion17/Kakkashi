@@ -1,6 +1,6 @@
 import random
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from info import PICS
 from Script import script   # ✅ IMPORT CLASS
@@ -71,4 +71,5 @@ async def cb_handler(client, query: CallbackQuery):
             ])
         )
      
+
 
