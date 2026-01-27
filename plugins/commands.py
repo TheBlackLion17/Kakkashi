@@ -22,7 +22,7 @@ async def start_cmd(client, message):
 
     buttons = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("ℹ️ Help", callback_data="help")],
+            [InlineKeyboardButton("ℹ️ Help", callback_data='help')],
             [InlineKeyboardButton("➕ Add Me", url=f"https://t.me/{client.me.username}?startgroup=true")]
         ]
     )
@@ -71,5 +71,6 @@ async def cb_handler(client, query: CallbackQuery):
             ])
         )
      
+
 
 
