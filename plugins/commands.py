@@ -26,8 +26,8 @@ async def start_cmd(client, message):
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data="help")],
         [
-            InlineKeyboardButton("• ᴜᴘᴅᴀᴛᴇs", url="https://t.me/Codeflix_Bots"),
-            InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ •", url="https://t.me/CodeflixSupport")
+            InlineKeyboardButton("• ᴜᴘᴅᴀᴛᴇs", url="https://t.me/Movies_Hub_OG"),
+            InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ •", url="https://t.me/AgsModsOG")
         ],
         [
             InlineKeyboardButton("• ᴀʙᴏᴜᴛ", callback_data="about"),
@@ -106,4 +106,5 @@ async def cb_handler(client, query: CallbackQuery):
 
     else:
         await query.answer("Unknown button!", show_alert=True)
+
 
